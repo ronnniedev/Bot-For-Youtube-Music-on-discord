@@ -1,24 +1,7 @@
-import discord
-from discord.ext import commands
-# from modulos.bromas import *
-# importamos variables de apikeys
+from apikeys import *
 import requests
 import json
-from apikeys import *
 
-client = commands.Bot(command_prefix='!', intents=discord.Intents.all()) #Establece las propiedades del cliente, intents los permisos, lo inicializamos con todos, ademas del prefijo de comandos
-
-@client.event
-async def on_ready(): # establece que hacer una vez el bot este encendido, en este caso imprime un mensaje en pantalla
-    print("Zitra ha sido conectada con exito!")
-    print("----------------------------------")
-
-
-@client.command() # si escribimos el comando, hola, escribira esto en pantalla
-async def hola(ctx):
-    await ctx.send("Hola , encantada de conocerte")
-
-@client.command() # si escribimos el comando, hola, escribira esto en pantalla
 async def broma(ctx):
     
     url = "https://jokes-always.p.rapidapi.com/common"
@@ -54,10 +37,3 @@ async def broma(ctx):
     texto = respuesta['data']['translations'][0]['translatedText'] 
     
     await ctx.send(texto)
-
-client.run(token)
-
-
-
-
-
