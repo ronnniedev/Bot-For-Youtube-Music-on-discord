@@ -1,50 +1,11 @@
 import discord
-from discord.ext import commands
 import yt_dlp as youtube_dl
+from discord.ext import commands
 import asyncio
-import os
-from modulos import bromas
-from modulos.reproductor import *
-from modulos import reproductor
-# importamos variables de apikeys
-from apikeys import *
+from discord import FFmpegPCMAudio
+from dotenv import load_dotenv
 
-
-client = commands.Bot(command_prefix='!', intents=discord.Intents.all()) #Establece las propiedades del cliente, intents los permisos, lo inicializamos con todos, ademas del prefijo de comandos
-
-@client.event
-async def on_ready(): # establece que hacer una vez el bot este encendido, en este caso imprime un mensaje en pantalla
-    print("Zitra ha sido conectada con exito!")
-    print("----------------------------------")
-
-@client.command(pass_context = True) # si escribimos el comando, hola, escribira esto en pantalla
-async def test(ctx):
-    os.remove("hola.txt")
-
-@client.command(pass_context = True) # si escribimos el comando, hola, escribira esto en pantalla
-async def broma(ctx):
-    await bromas.bromaActua(ctx)
-
-@client.command(pass_context = True)
-async def unete(ctx):
-    if(ctx.author.voice):
-        channel = ctx.message.author.voice.channel
-        voice = await channel.connect()
-    else:
-        await ctx.send("No estas en ningun canal de voz, por favor unete a uno")
-
-@client.command(pass_context = True)
-async def vete(ctx):
-    if(ctx.voice_client):
-        await ctx.guild.voice_client.disconnect()
-        await ctx.send("Me he desconectado")
-    else:
-        await ctx.send("No estoy en ningun canal")
-
-@client.command(pass_context = True)
-async def empieza(ctx,url):
-    await  reproductor.play(ctx,url)
-    
+client = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
@@ -80,16 +41,14 @@ class YTDLSource(discord.PCMVolumeTransformer):
         filename = data['title'] if stream else ytdl.prepare_filename(data)
         return filename
  
-@client.command(pass_context = True)
 async def play(ctx,url):
     if(ctx.voice_client):
         server = ctx.message.guild
         voice_channel = server.voice_client
         async with ctx.typing():
             filename = await YTDLSource.from_url(url, loop=client.loop)
-            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=filename)) 
+            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=filename))
         await ctx.send("Now playing requested by @{} : {}".format(ctx.author.name,filename))
-         
     else:
         await ctx.send("No estoy conectada a ningun canal, por favor invocame con el comando !unete")
 
@@ -112,11 +71,7 @@ async def continua(ctx):
 @client.command(pass_context = True)
 async def stop(ctx):
     voice = discord.utils.get(client.voice_clients,guild=ctx.guild)
-    voice.stop() 
-
-client.run(token)
-
-
+    voice.stop()
 
 
 

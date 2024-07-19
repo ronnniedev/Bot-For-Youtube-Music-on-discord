@@ -2,7 +2,12 @@ from apikeys import *
 import requests
 import json
 
-async def broma(ctx):
+"""Este modulo al ser invocado realia peticiones a dos apis asociadas
+    1º Llama a la api Jokes que esta en Ingles para que le mande una broma aleatorio
+    2º Llama a la api de google traductor para transforma ese texto a español
+    3º Finalmente buscamos en el archivo jason que nos devuelve la api el texto traducido y lo escribimos """
+
+async def bromaActua(ctx):
     
     url = "https://jokes-always.p.rapidapi.com/common"
 
@@ -14,7 +19,7 @@ async def broma(ctx):
     response= requests.get(url, headers=headers)
     texto = json.loads(response.text)['data']
     # await ctx.send(texto)
-     # formateamos el texto para que nos suelte un chiste
+    # formateamos el texto para que nos suelte un chiste
     
     url = "https://google-translator9.p.rapidapi.com/v2"
 
