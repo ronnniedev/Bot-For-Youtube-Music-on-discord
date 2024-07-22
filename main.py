@@ -3,19 +3,22 @@ from discord.ext import commands
 import yt_dlp as youtube_dl
 import asyncio
 import os
+import time
 from modulos import bromas
-from modulos.reproductor import *
-from modulos import reproductor
 # importamos variables de apikeys
 from apikeys import *
 
 
 client = commands.Bot(command_prefix='!', intents=discord.Intents.all()) #Establece las propiedades del cliente, intents los permisos, lo inicializamos con todos, ademas del prefijo de comandos
+filename = ""
 
 @client.event
 async def on_ready(): # establece que hacer una vez el bot este encendido, en este caso imprime un mensaje en pantalla
     print("Zitra ha sido conectada con exito!")
     print("----------------------------------")
+    channel = client.get_channel(1259826510727086252)
+    await channel.send("-------Version 0.2-------\n\nEste bot ahora esta en la nube!\n\n--!play hara que el bot se una a tu canal de voz y reproduzca un audio"+
+                       "\n\n--!stop hara que se pare y se vaya del canal")
 
 @client.command(pass_context = True) # si escribimos el comando, hola, escribira esto en pantalla
 async def test(ctx):
@@ -27,11 +30,7 @@ async def broma(ctx):
 
 @client.command(pass_context = True)
 async def unete(ctx):
-    if(ctx.author.voice):
-        channel = ctx.message.author.voice.channel
-        voice = await channel.connect()
-    else:
-        await ctx.send("No estas en ningun canal de voz, por favor unete a uno")
+    await ctx.send("Este comando ya no funciona: Usa !play + url de tu video para que me conecte a tu canal :)")
 
 @client.command(pass_context = True)
 async def vete(ctx):
@@ -40,11 +39,6 @@ async def vete(ctx):
         await ctx.send("Me he desconectado")
     else:
         await ctx.send("No estoy en ningun canal")
-
-@client.command(pass_context = True)
-async def empieza(ctx,url):
-    await  reproductor.play(ctx,url)
-    
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
@@ -82,16 +76,28 @@ class YTDLSource(discord.PCMVolumeTransformer):
  
 @client.command(pass_context = True)
 async def play(ctx,url):
+    global filename
+    channel = ctx.message.author.voice.channel
+    voice = await channel.connect()
     if(ctx.voice_client):
         server = ctx.message.guild
         voice_channel = server.voice_client
         async with ctx.typing():
             filename = await YTDLSource.from_url(url, loop=client.loop)
-            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=filename)) 
+            def after_playing_callback(error):
+                coro = after_playing(ctx, filename)
+                fut = asyncio.run_coroutine_threadsafe(coro, client.loop)
+                try:
+                    fut.result()
+                except Exception as e:
+                    print(f"Error al desconectar: {e}")
+            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=filename),after=after_playing_callback)
         await ctx.send("Now playing requested by @{} : {}".format(ctx.author.name,filename))
-         
     else:
         await ctx.send("No estoy conectada a ningun canal, por favor invocame con el comando !unete")
+
+async def after_playing(ctx, filename):
+    os.remove(filename)
 
 @client.command(pass_context = True)
 async def para(ctx):
@@ -112,7 +118,9 @@ async def continua(ctx):
 @client.command(pass_context = True)
 async def stop(ctx):
     voice = discord.utils.get(client.voice_clients,guild=ctx.guild)
-    voice.stop() 
+    voice.stop()
+    await ctx.voice_client.disconnect() 
+    os.remove(filename)   
 
 client.run(token)
 
