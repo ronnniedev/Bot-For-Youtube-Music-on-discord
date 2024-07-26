@@ -12,10 +12,8 @@ async def on_ready(): # establece que hacer una vez el bot este encendido, en es
     print("Zitra ha sido conectada con exito!")
     print("----------------------------------")
     channel = client.get_channel(1259826510727086252)
-    """await channel.send("-------Version 0.22-------\nActualizacion de emergencia realizada\n"
-                       +"--Comando -->!ayuda introducido explicando el funcionamiento de la nueva botonera\n"
-                       +"--Botonera mejorada, ahora el bot distingue si esta en funcionamiento en un canal\n"
-                       +"--Optimizacion del reproductor, ahora no se puede abusar del comando -!play")"""
+    await channel.send("-------Version 0.23-------\nActualizacion de emergencia realizada\n"
+                       +"--Codigo optimizado")
     
 @client.command(pass_context = True) 
 async def broma(ctx):
