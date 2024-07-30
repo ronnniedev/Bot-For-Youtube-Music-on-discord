@@ -4,16 +4,24 @@ from modulos import bromas
 # importamos variables de apikeys
 from apikeys import *
 from modulos import reproductor
+import asyncio
+
 
 client = commands.Bot(command_prefix='!', intents=discord.Intents.all()) #Establece las propiedades del cliente, intents los permisos, lo inicializamos con todos, ademas del prefijo de comandos
+
 
 @client.event
 async def on_ready(): # establece que hacer una vez el bot este encendido, en este caso imprime un mensaje en pantalla
     print("Zitra ha sido conectada con exito!")
     print("----------------------------------")
     channel = client.get_channel(1259826510727086252)
-    await channel.send("-------Version 0.23-------\nActualizacion de emergencia realizada\n"
-                       +"--Codigo optimizado")
+    await channel.send("-------Version 0.3 !Actualizacion de colas¡-------\n"
+                      +"--Ahora -!play encola las canciones sugeridas, si quieres añadir una cancion en cola solo necesitas escribir"
+                        + "-!play y la url de la cancion\n"
+                      + "-Se añade el comando -!cola para ver la cola actual\n"
+                      + "-Se añade el comando -!skip para saltar a la siguiente cancion\n"
+                      + "-Se actualiza la lista de comandos en -!ayuda\n"
+                      + "-Ahora cuando el bot termina la ultima cancion se desconecta\n")
     
 @client.command(pass_context = True) 
 async def broma(ctx):
@@ -35,11 +43,22 @@ async def para(ctx):
 async def continua(ctx):
     await reproductor.continua(ctx,client)
 
+@client.command(pass_context = True) 
+async def skip(ctx):
+    await reproductor.skip(ctx,client)
+
+@client.command(pass_context = True) 
+async def cola(ctx):
+    await reproductor.mostrar_cola(ctx,client)
+
 @client.command(pass_context = True)
 async def ayuda(ctx):
     await ctx.send("--Comandos de tu servidora Zitra--\n\n"
            + "--!broma :Te escribire una maginifica broma que hara que te deleites en ti mismo\n"
-           + "--!play + url de youtube : Si no estoy en un canal de voz me unire y reproducire el video que quieras, recuerda que los streams no los leeree\n"
+           + "--!play + url de youtube : Si no estoy en un canal de voz me unire y reproducire el video que quieras, tambien en caso de estar reproduciendo audio añadire"
+           + " esa cancion a la cola\n"
+           + "--!cola te muestro la lista de canciones en cola\n"
+           + "--!skip me salto la cancion actual, si no quedan mas canciones, me desconecto\n"
            + "--!para : parare el audio que este reproduciendo\n"
            + "--!continua : reiniciare el audio que allas pausado\n"
            + "--!stop : si quieres que me vaya del canal y parar la cancion actual escribe este comando\n\n"
