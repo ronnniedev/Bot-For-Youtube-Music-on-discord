@@ -1,19 +1,13 @@
-"""
-    Este modulo al ser invocado realia peticiones a dos apis asociadas
-    1º Llama a la api Jokes que esta en Ingles para que le mande una broma aleatorio
-    2º Llama a la api de google traductor para transforma ese texto a español
-    3º Finalmente buscamos en el archivo jason que nos devuelve la api el texto traducido y lo escribimos 
-"""
 from apikeys import *
 import requests
 import json
 
+"""Este modulo al ser invocado realia peticiones a dos apis asociadas
+    1º Llama a la api Jokes que esta en Ingles para que le mande una broma aleatorio
+    2º Llama a la api de google traductor para transforma ese texto a español
+    3º Finalmente buscamos en el archivo jason que nos devuelve la api el texto traducido y lo escribimos """
 
 async def bromaActua(ctx):
-    """
-    Le pedimos a la API jokes una broma en ingles
-    tras ello la traducimos del ingles al español usando la api del traductor de google 
-    """
     
     url = "https://jokes-always.p.rapidapi.com/common"
 
@@ -46,9 +40,5 @@ async def bromaActua(ctx):
     respuesta = respuesta.json() 
     """le indicamos donde esta el texto a escribir, le decimos que esta en data, seccion translations, elemento 0 y translated text"""
     texto = respuesta['data']['translations'][0]['translatedText'] 
-    """
-        Finalmente enviamos el texto final
-    """
-
-    await ctx.send(texto)
     
+    await ctx.send(texto)
